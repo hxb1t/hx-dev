@@ -1,0 +1,23 @@
+{
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+
+  "[shellscript]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false
+  },
+
+  // Run from the repo root so the `# shellcheck source=lib/...` directives resolve.
+  "shellcheck.customArgs": ["-x"],
+  "shellcheck.useWorkspaceRootAsCwd": true,
+
+  // Bash IDE is here for go-to-definition across sourced files (log, die,
+  // step_*). The ShellCheck extension already lints, so turn off Bash IDE's
+  // copy to avoid duplicate diagnostics, and keep shfmt off: it would collapse
+  // the hand-aligned columns in the scripts.
+  "bashIde.shellcheckPath": "",
+  "bashIde.shfmt.path": ""
+}

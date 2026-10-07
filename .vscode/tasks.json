@@ -1,0 +1,59 @@
+{
+  // None of these install anything (see CLAUDE.md).
+  "version": "2.0.0",
+  "options": {
+    "cwd": "${workspaceFolder}",
+    "shell": { "executable": "/bin/bash", "args": ["-c"] }
+  },
+  "tasks": [
+    {
+      "label": "Syntax check",
+      "type": "shell",
+      "command": "rc=0; for f in setup.sh lib/*.sh steps/*.sh; do bash -n \"$f\" || rc=1; done; exit $rc",
+      "problemMatcher": {
+        "owner": "bash",
+        "fileLocation": ["relative", "${workspaceFolder}"],
+        "pattern": {
+          "regexp": "^(.+): line (\\d+): (.*)$",
+          "file": 1,
+          "line": 2,
+          "message": 3
+        }
+      }
+    },
+    {
+      "label": "Lint (shellcheck)",
+      "type": "shell",
+      "command": "shellcheck -x -f gcc setup.sh lib/*.sh steps/*.sh",
+      "problemMatcher": "$gcc"
+    },
+    {
+      "label": "Check",
+      "dependsOrder": "sequence",
+      "dependsOn": ["Syntax check", "Lint (shellcheck)"],
+      "problemMatcher": [],
+      "group": { "kind": "test", "isDefault": true }
+    },
+    {
+      "label": "List steps",
+      "type": "shell",
+      "command": "./setup.sh --list",
+      "problemMatcher": []
+    },
+    {
+      "label": "Dispatch test (stubbed steps)",
+      "detail": "Sources setup.sh, replaces preflight and every step_* with an echo, then runs main",
+      "type": "shell",
+      "command": "source ./setup.sh && preflight() { echo '[preflight]'; } && for f in $(compgen -A function step_); do eval \"$f() { echo '[$f]'; }\"; done && main ${input:steps}",
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "steps",
+      "type": "promptString",
+      "description": "Arguments for main (step names, --all, --menu; empty shows the menu)",
+      "default": "gh zsh"
+    }
+  ]
+}
